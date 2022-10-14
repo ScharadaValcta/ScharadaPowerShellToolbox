@@ -127,6 +127,7 @@ if ($Answer -match "[yY]") {
 #Edge deinstallieren
 #todo
 
+#DarkMode
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Soll Windows Darkmode eingestellt werden?(y/n)'
@@ -134,6 +135,56 @@ do {
 until ($Answer -match "[yYnN]")
 if ($Answer -match "[yY]") {
     Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value 0
+}
+
+#Feedback disable
+$Answer = $null
+do {
+    Write-Output "Windows fragt immer mal wieder nach Feedback."
+    $Answer = Read-Host -Prompt 'Soll Windows damit aufhören?(y/n)'
+}
+until ($Answer -match "[yYnN]")
+if ($Answer -match "[yY]") {
+    If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules")) {
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 1
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClient" -ErrorAction SilentlyContinue | Out-Null
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" -ErrorAction SilentlyContinue | Out-Null   
+}
+
+#Telemetry disable
+$Answer = $null
+do {
+    Write-Output "Windows sendet Telemetry an Windows."
+    Write-Output "Ich empfehle das auszuschalten."
+    $Answer = Read-Host -Prompt 'Soll Windows keine Telemetry mehr senden?(y/n)'
+}
+until ($Answer -match "[yYnN]")
+if ($Answer -match "[yY]") {
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" | Out-Null
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\ProgramDataUpdater" | Out-Null
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Autochk\Proxy" | Out-Null
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" | Out-Null
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" | Out-Null
+    Disable-ScheduledTask -TaskName "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" | Out-Null
+}
+
+#Wi-Fi Sense
+$Answer = $null
+do {
+    $Answer = Read-Host -Prompt 'Soll Wi-Fi Sense deaktiviert werden?(y/n)'
+}
+until ($Answer -match "[yYnN]")
+if ($Answer -match "[yY]") {
+    If (!(Test-Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting")) {
+        New-Item -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "Value" -Type DWord -Value 0
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 0
 }
 
 #VC++ installieren
