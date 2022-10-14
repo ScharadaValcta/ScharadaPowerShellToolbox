@@ -6,7 +6,9 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
 	Exit
 }
+
 #Restore Point
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Soll ein Restore Point erstellt werden?(y/n)'
@@ -19,7 +21,8 @@ if ($answer -match "[yY]") {
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 }
 
-#Winget installieren 
+#Winget installieren
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Winget ist ein Tool um Programme zu installieren und zu deinstallieren."
@@ -51,6 +54,7 @@ if ($answer -match "[yY]") {
 #todo
 
 #Cortana deaktivieren
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Sollen Cortana deaktiviert werden?(y/n)'
@@ -85,6 +89,7 @@ if ($answer -match "[yY]") {
 }
 
 #OneDrive deaktivieren
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Sollen OneDrive deaktiviert und deinstalliert werden?(y/n)'
@@ -128,6 +133,7 @@ if ($Answer -match "[yY]") {
 #todo
 
 #DarkMode
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Soll Windows Darkmode eingestellt werden?(y/n)'
@@ -138,6 +144,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Feedback disable
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Windows fragt immer mal wieder nach Feedback."
@@ -155,6 +162,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Telemetry disable
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Windows sendet Telemetry an Windows."
@@ -174,6 +182,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Wi-Fi Sense
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Soll Wi-Fi Sense deaktiviert werden?(y/n)'
@@ -188,6 +197,7 @@ if ($Answer -match "[yY]") {
 }
 
 #VC++ installieren
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Ich empfehle auf Gaming Rechner VC++ zu installieren."
@@ -234,6 +244,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Empfolende Settings setzen
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Ich empfehle Einige Settings"
@@ -292,9 +303,8 @@ if ($Answer -match "[yY]") {
     #Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage\ShowJumpView" -Name "Microsoft.WindowsStore_8wekyb3d8bbwe!App" -Type DWord -Value 1
 }
 
-
-
 #Device Manager prüfen
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Ich empfehle den Device Manager zu prüfen."
@@ -308,15 +318,52 @@ if ($Answer -match "[yY]") {
 }
 
 #Aufgaben planung/Task Scheduler prüfen und setzen
-#todo
+Clear-Host
+$Answer = $null
+do {
+    Write-Output "Ich empfehle den Task Scheduler zu prüfen."
+    Write-Output "Ob da dinge drin stehen die da nichts zu suchen haben."
+    $Answer = Read-Host -Prompt 'Sollen Task Scheduler geöffnet werden?(y/n)'
+}
+until ($Answer -match "[yYnN]")
+if ($Answer -match "[yY]") {
+    #Get-PnpDevice
+    taskschd.msc
+}
 
 #Event Viewer prüfen
-#todo
+Clear-Host
+$Answer = $null
+do {
+    Write-Output "Ich empfehle den Event Viewer zu prüfen."
+    Write-Output "Ob da dinge drin stehen die da nichts zu suchen haben."
+    $Answer = Read-Host -Prompt 'Sollen Event Viewer geöffnet werden?(y/n)'
+}
+until ($Answer -match "[yYnN]")
+if ($Answer -match "[yY]") {
+    #Get-PnpDevice
+    eventvwr.msc
+}
 
-#Startup checken
+#Taskmanager Startup prüfen
+Clear-Host
+$Answer = $null
+do {
+    Write-Output "Ich empfehle den Taskmanager Startup zu prüfen."
+    Write-Output "Ob da dinge drin stehen die da nichts zu suchen haben."
+    $Answer = Read-Host -Prompt 'Sollen Taskmanager Startup geöffnet werden?(y/n)'
+}
+until ($Answer -match "[yYnN]")
+if ($Answer -match "[yY]") {
+    #Get-PnpDevice
+    taskmgr.exe
+}
+
+#Startup checken in Regedit
 #todo
 
 #Disable Features
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Ich empfehle Features zu disablen aus Security Gründen."
@@ -328,8 +375,10 @@ if ($Answer -match "[yY]") {
 }
 
 #Auf C:\ werden lnk Dateien gesucht und entfernt
+Clear-Host
 $Answer = $null
 do {
+    Write-Output "Diese Option kann sehr lange dauern."
     $Answer = Read-Host -Prompt 'Sollen defekte lnk Dateien entfernt werden?(y/n)'
 }
 until ($Answer -match "[yYnN]")
@@ -341,47 +390,61 @@ if ($Answer -match "[yY]") {
     }
     until ($Answer -eq 'sym' -or $Answer -eq 'del')
 
-    $every_linked_files = Get-ChildItem -Path c:\ -r *.lnk -ErrorAction SilentlyContinue 
-    foreach ($every_linked_file in $every_linked_files) {
-        [string]$every_path = $every_linked_file.FullName
-    
-        $sh = New-Object -COM WScript.Shell
-        $targetPath = $sh.CreateShortcut($every_path).TargetPath
-    
-        if ($null -eq $targetPath ) {
-            #Write-Output "target path war null "
-            $targetPath = "."
-        }
-        if ($targetPath -eq "") {
-            #Write-Output "target path war leer"
-            $targetPath = "."
-        }
-    
-        if (Test-Path $targetPath ) {
-        }
-        else {
-            Write-Output "Folgendes existiert nicht: $($targetPath)"
-            if ($Answer -eq "sym" ) {
-                Write-Output "Daher kann folgendes removed werden: $($every_path)"
+    do {
+        $every_linked_files = Get-ChildItem -Path c:\ -r *.lnk -ErrorAction SilentlyContinue 
+        foreach ($every_linked_file in $every_linked_files) {
+            [string]$every_path = $every_linked_file.FullName
+        
+            $sh = New-Object -COM WScript.Shell
+            $targetPath = $sh.CreateShortcut($every_path).TargetPath
+        
+            if ($null -eq $targetPath ) {
+                #Write-Output "target path war null "
+                $targetPath = "."
             }
-            if ($Answer -eq "del" ) {
-                Write-Output "Daher wird folgendes removed: $($every_path)"
-                Remove-Item $every_path
-                if (Test-Path $every_path ) {
-                    Write-Output "Remove hat nicht geklappt"
-                }
-                else {
-                    Write-Output "Remove hat geklappt"
-                }
+            if ($targetPath -eq "") {
+                #Write-Output "target path war leer"
+                $targetPath = "."
             }
-        Write-Output ""
+        
+            if (Test-Path $targetPath ) {
+            }
+            else {
+                Write-Output "Folgendes existiert nicht: $($targetPath)"
+                if ($Answer -eq "sym" ) {
+                    Write-Output "Daher kann folgendes removed werden: $($every_path)"
+                }
+                if ($Answer -eq "del" ) {
+                    Write-Output "Daher wird folgendes removed: $($every_path)"
+                    Remove-Item $every_path
+                    if (Test-Path $every_path ) {
+                        Write-Output "Remove hat nicht geklappt"
+                    }
+                    else {
+                        Write-Output "Remove hat geklappt"
+                    }
+                }
+            Write-Output ""
+            }
+        } 
+        if ($Answer -eq "del") {
+            $Answer = "exit"
         }
-    }   
+
+        if ($Answer -eq "sym") {
+            do {
+                $Answer = Read-Host -Prompt "Es wurde Simuliert. Soll jetzt entfernt werden(del) oder beendet werden(exit)?(del/exit)"
+            }
+            until ($Answer -eq 'del' -or $Answer -eq 'exit')
+        }
+    } until ($Answer -eq 'exit')
 }
 
 #Full Virus Check
+Clear-Host
 $Answer = $null
 do {
+    Write-Output "Diese Option kann sehr lange dauern."
     $Answer = Read-Host -Prompt 'Soll ein voller Virus Scan durchgeführt werden?(y/n)'
 }
 until ($Answer -match "[yYnN]")
@@ -394,6 +457,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Full Update
+Clear-Host
 $Answer = $null
 do {
     Write-Output "Diese Option kann sehr lange dauern."
@@ -415,6 +479,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Disk Cleanup
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Sollen ein DiskCleanup duchgeführt werden?(y/n)'
@@ -430,6 +495,7 @@ if ($Answer -match "[yY]") {
 }
 
 #Diskdefrag
+Clear-Host
 $Answer = $null
 do {
     $Answer = Read-Host -Prompt 'Sollen ein DiskDefrag duchgeführt werden?(y/n)'
