@@ -1,13 +1,1 @@
-*.zip
-*.ini
-*.cfg
-*.log
-*.webp
-*.snp
-*log.txt
-*.bin
-*.inf
-*.sdb
-*.txt
-*.chm
-*.7z
+myTools/
