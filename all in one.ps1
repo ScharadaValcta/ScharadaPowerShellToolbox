@@ -505,3 +505,9 @@ if ($Answer -match "[yY]") {
     dfrgui
     #Start-Process "$env:SYSTEMROOT\system32\dfrgui.exe"
 }
+
+$Answer = "Stop"
+Do {
+    $Answer = Read-Host -Prompt 'Programm ist vorbei. Enter zum Vortfahren'
+}
+Until ( $Answer -eq "" )
